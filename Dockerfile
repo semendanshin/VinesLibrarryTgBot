@@ -5,6 +5,7 @@ RUN pip install -r requirements.txt
 
 ADD code/ code/
 ADD data/ data/
+RUN mkdir img/
 
 RUN pip install pyzbar[scripts]
 
