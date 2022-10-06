@@ -2,6 +2,7 @@ from logging import getLogger
 from logging import config
 from config import LOGGING
 from datetime import datetime
+import subprocess
 
 
 config.dictConfig(LOGGING)
@@ -16,6 +17,7 @@ def debug(f):
             return f(*args, **kwargs)
         except Exception as e:
             logger.exception(f'Ошибка - {e}')
+            subprocess.call(['python', 'main.py'])
     return inner
 
 

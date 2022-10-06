@@ -12,6 +12,7 @@ class Texts:
                                 'можно автоматически заполнить некоторые пункты, ' \
                                 'отсканировав штрих-код бутылки. Хотите?'
     FILL_WITH_BARCODE_SUCCESS = 'Отлично, осталась всего половина полей.'
+    EMPTY_USER_DB = 'Необходимо сделать хотя бы одну запись.'
     NAME = 'Напишите, пожалуйста название вина.'
     VINE_TYPE = 'Хорошо, какой тип вина?'
     DATE = 'Напишите дату, когда вы его попробовали в формате ГГГГ-ММ-ДД.'
@@ -41,11 +42,11 @@ class Texts:
                        "•Комментарий - {comm}\n"
 
 
-class AskForAnythingKeyboard:
-    CALLBACK_BUTTON_YES = 'ask_for_anything_callback_button_yes'
-    CALLBACK_BUTTON_NO = 'ask_for_anything_callback_button_no'
+class AskForSomethingKeyboard:
+    CALLBACK_BUTTON_YES = 'ask_for_something_callback_button_yes'
+    CALLBACK_BUTTON_NO = 'ask_for_something_callback_button_no'
 
-    PATTERN = r'ask_for_anything_callback\w'
+    PATTERN = r'ask_for_something_callback\w'
 
     BUTTONS_TEXT = {
         CALLBACK_BUTTON_YES: 'Да',
@@ -69,15 +70,20 @@ class AskForAnythingKeyboard:
 
 
 class MainKeyboard:
+    ADD_VINE_TEXT = 'Добавить 🍷'
+    VIEW_VINES_TEXT = 'Просмотр 🍷'
+    BARCODE_SEARCH_TEXT = 'Поиск по штрихкоду 🍷'
+    NEAREST_STORE = 'Ближайший магазин'
+
     KEYBOARD = ReplyKeyboardMarkup(
         [
             [
-                KeyboardButton('Добавить 🍷'),
-                KeyboardButton('Просмотр 🍷')
+                KeyboardButton(ADD_VINE_TEXT),
+                KeyboardButton(VIEW_VINES_TEXT)
             ],
             [
-                KeyboardButton('Поиск по штрихкоду 🍷'),
-                KeyboardButton('Ближайший магазин', request_location=True)
+                KeyboardButton(BARCODE_SEARCH_TEXT),
+                KeyboardButton(NEAREST_STORE, request_location=True)
             ]
         ],
         one_time_keyboard=False,
@@ -86,10 +92,11 @@ class MainKeyboard:
 
 
 class CancelKeyboard:
+    CANCEL_TEXT = 'Отмена 🚫'
     KEYBOARD = ReplyKeyboardMarkup(
         [
             [
-                KeyboardButton('Отмена 🚫')
+                KeyboardButton(CANCEL_TEXT)
             ]
         ],
         one_time_keyboard=False,

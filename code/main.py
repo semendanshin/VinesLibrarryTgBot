@@ -10,7 +10,9 @@ from telegram.utils.request import Request
 from config import TG_TOKEN
 from config import DBMenuListKeyboard
 from config import DBMenuItemKeyboard
-from config import AskForAnythingKeyboard
+from config import AskForSomethingKeyboard
+from config import MainKeyboard
+from config import CancelKeyboard
 
 from handlers import AddVineConversation
 from handlers import SearchByBarcode
@@ -18,7 +20,7 @@ from handlers import DataBaseMenu
 from handlers import OtherFunctions
 
 
-"""Тэг бота в телеграме - @wine_library_bot"""
+#  Тэг бота в телеграме - @wine_library_bot
 
 
 def main():
@@ -45,24 +47,24 @@ def main():
         MessageHandler(Filters.location, other_functions.find_near_store)
     )
     updater.dispatcher.add_handler(ConversationHandler(
-        entry_points=[MessageHandler(Filters.text('Поиск по штрихкоду 🍷'), search_by_barcode.start),
+        entry_points=[MessageHandler(Filters.text(MainKeyboard.BARCODE_SEARCH_TEXT), search_by_barcode.start),
                       CommandHandler('search_by_barcode', search_by_barcode.start)],
         states={'SEARCH': [MessageHandler(Filters.photo, search_by_barcode.search)]},
         fallbacks=[
             CommandHandler('cancel', search_by_barcode.cancel),
-            MessageHandler(Filters.text(['Отмена 🚫']), search_by_barcode.cancel)
+            MessageHandler(Filters.text(CancelKeyboard.CANCEL_TEXT), search_by_barcode.cancel)
         ],
     ))
     updater.dispatcher.add_handler(ConversationHandler(
         entry_points=[
             CommandHandler('add_vine', add_vine_conversation.start),
-            MessageHandler(Filters.text(['Добавить 🍷']), add_vine_conversation.start)
+            MessageHandler(Filters.text(MainKeyboard.ADD_VINE_TEXT), add_vine_conversation.start)
         ],
         states={
             'ASK_FOR_FILL_WITH_BARCODE': [
                 CallbackQueryHandler(
                     callback=add_vine_conversation.ask_for_fill_with_barcode,
-                    pattern=AskForAnythingKeyboard.PATTERN
+                    pattern=AskForSomethingKeyboard.PATTERN
                 )
             ],
             'FILL_WITH_BARCODE': [
@@ -70,56 +72,56 @@ def main():
             ],
             'NAME': [
                 MessageHandler(
-                    Filters.text & (~Filters.command) & (~Filters.text(['Отмена 🚫'])),
+                    Filters.text & (~Filters.command) & (~Filters.text(CancelKeyboard.CANCEL_TEXT)),
                     add_vine_conversation.name
                 )
             ],
             'VINE_TYPE': [
                 MessageHandler(
-                    Filters.text & (~Filters.command) & (~Filters.text(['Отмена 🚫'])),
+                    Filters.text & (~Filters.command) & (~Filters.text(CancelKeyboard.CANCEL_TEXT)),
                     add_vine_conversation.vine_type
                 )
             ],
             'DATE': [
                 MessageHandler(
-                    Filters.text & (~Filters.command) & (~Filters.text(['Отмена 🚫'])),
+                    Filters.text & (~Filters.command) & (~Filters.text(CancelKeyboard.CANCEL_TEXT)),
                     add_vine_conversation.date
                 )
             ],
             'VARIETY': [
                 MessageHandler(
-                    Filters.text & (~Filters.command) & (~Filters.text(['Отмена 🚫'])),
+                    Filters.text & (~Filters.command) & (~Filters.text(CancelKeyboard.CANCEL_TEXT)),
                     add_vine_conversation.variety
                 )
             ],
             'PLACE': [
                 MessageHandler(
-                    Filters.text & (~Filters.command) & (~Filters.text(['Отмена 🚫'])),
+                    Filters.text & (~Filters.command) & (~Filters.text(CancelKeyboard.CANCEL_TEXT)),
                     add_vine_conversation.place
                 )
             ],
             'MARK': [
                 MessageHandler(
-                    Filters.text & (~Filters.command) & (~Filters.text(['Отмена 🚫'])),
+                    Filters.text & (~Filters.command) & (~Filters.text(CancelKeyboard.CANCEL_TEXT)),
                     add_vine_conversation.mark
                 )
             ],
             'PRICE': [
                 MessageHandler(
-                    Filters.text & (~Filters.command) & (~Filters.text(['Отмена 🚫'])),
+                    Filters.text & (~Filters.command) & (~Filters.text(CancelKeyboard.CANCEL_TEXT)),
                     add_vine_conversation.price
                 )
             ],
             'COMM': [
                 MessageHandler(
-                    Filters.text & (~Filters.command) & (~Filters.text(['Отмена 🚫'])),
+                    Filters.text & (~Filters.command) & (~Filters.text(CancelKeyboard.CANCEL_TEXT)),
                     add_vine_conversation.comm
                 )
             ],
             'ASK_FOR_BARCODE': [
                 CallbackQueryHandler(
                     callback=add_vine_conversation.ask_for_barcode,
-                    pattern=AskForAnythingKeyboard.PATTERN
+                    pattern=AskForSomethingKeyboard.PATTERN
                 )
             ],
             'BARCODE': [
@@ -128,7 +130,7 @@ def main():
             'ASK_FOR_PHOTO': [
                 CallbackQueryHandler(
                     callback=add_vine_conversation.ask_for_photo,
-                    pattern=AskForAnythingKeyboard.PATTERN
+                    pattern=AskForSomethingKeyboard.PATTERN
                 )
             ],
             'PHOTO': [
@@ -137,11 +139,11 @@ def main():
         },
         fallbacks=[
             CommandHandler('cancel', add_vine_conversation.cancel),
-            MessageHandler(Filters.text(['Отмена 🚫']), add_vine_conversation.cancel)
+            MessageHandler(Filters.text(CancelKeyboard.CANCEL_TEXT), add_vine_conversation.cancel)
         ],
     ))
     updater.dispatcher.add_handler(
-        MessageHandler(Filters.text(['Просмотр 🍷']), data_base_menu.start)
+        MessageHandler(Filters.text(MainKeyboard.VIEW_VINES_TEXT), data_base_menu.start)
     )
     updater.dispatcher.add_handler(
         CommandHandler('show_db', data_base_menu.start)

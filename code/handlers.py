@@ -51,7 +51,7 @@ class DataBaseMenu:
         else:
             self.bot.send_message(
                 chat_id=update.effective_chat.id,
-                text='Необходимо сделать хотя бы одну запись.'
+                text=Texts.EMPTY_USER_DB
             )
 
     @debug
@@ -250,11 +250,11 @@ class DataBaseMenu:
                         InlineKeyboardButton(
                             DBMenuListKeyboard.BUTTONS_TEXT[DBMenuListKeyboard.CALLBACK_BUTTON_REWIND_NEXT],
                             callback_data=DBMenuListKeyboard.CALLBACK_BUTTON_REWIND_NEXT
-                        )] if 0 < context.user_data['set_id'] < len(context.user_data['vines']) // 5 else [],
+                        )] if 0 < context.user_data['set_id'] < (len(context.user_data['vines']) - 1) // 5 else [],
                     ([InlineKeyboardButton(
                         DBMenuListKeyboard.BUTTONS_TEXT[DBMenuListKeyboard.CALLBACK_BUTTON_REWIND_PREVIOUS],
                         callback_data=DBMenuListKeyboard.CALLBACK_BUTTON_REWIND_PREVIOUS
-                    )] if context.user_data['set_id'] >= len(context.user_data['vines']) // 5 else []),
+                    )] if context.user_data['set_id'] >= (len(context.user_data['vines']) - 1) // 5 else []),
                     *[
                         [InlineKeyboardButton(f'{el.comment[-1].date} / {el.name} / '
                                               f'{el.comment[-1].price} / {el.comment[-1].mark}',
@@ -279,7 +279,7 @@ class AddVineConversation:
             self.bot.send_message(
                 chat_id=update.message.chat_id,
                 text=Texts.ASK_FOR_FILL_WITH_BARCODE,
-                reply_markup=AskForAnythingKeyboard.KEYBOARD
+                reply_markup=AskForSomethingKeyboard.KEYBOARD
             )
             return 'ASK_FOR_FILL_WITH_BARCODE'
         else:
@@ -292,14 +292,14 @@ class AddVineConversation:
             message_id=update.effective_message.message_id
         )
         data = update.callback_query.data
-        if data == AskForAnythingKeyboard.CALLBACK_BUTTON_YES:
+        if data == AskForSomethingKeyboard.CALLBACK_BUTTON_YES:
             self.bot.send_message(
                 chat_id=update.callback_query.message.chat_id,
                 text=Texts.BARCODE,
                 reply_markup=CancelKeyboard.KEYBOARD
             )
             return 'FILL_WITH_BARCODE'
-        elif data == AskForAnythingKeyboard.CALLBACK_BUTTON_NO:
+        elif data == AskForSomethingKeyboard.CALLBACK_BUTTON_NO:
             self.bot.send_message(
                 chat_id=update.callback_query.message.chat_id,
                 text=Texts.NAME,
@@ -357,7 +357,7 @@ class AddVineConversation:
         self.bot.send_message(
             chat_id=update.message.chat_id,
             text=Texts.ASK_FOR_BARCODE,
-            reply_markup=AskForAnythingKeyboard.KEYBOARD
+            reply_markup=AskForSomethingKeyboard.KEYBOARD
         )
         return 'ASK_FOR_BARCODE'
 
@@ -368,19 +368,19 @@ class AddVineConversation:
             message_id=update.effective_message.message_id
         )
         data = update.callback_query.data
-        if data == AskForAnythingKeyboard.CALLBACK_BUTTON_YES:
+        if data == AskForSomethingKeyboard.CALLBACK_BUTTON_YES:
             self.bot.send_message(
                 chat_id=update.callback_query.message.chat_id,
                 text=Texts.BARCODE,
                 reply_markup=CancelKeyboard.KEYBOARD
             )
             return 'BARCODE'
-        elif data == AskForAnythingKeyboard.CALLBACK_BUTTON_NO:
+        elif data == AskForSomethingKeyboard.CALLBACK_BUTTON_NO:
             context.user_data['BARCODE'] = ''
             self.bot.send_message(
                 chat_id=update.callback_query.message.chat_id,
                 text=Texts.ASK_FOR_PHOTO,
-                reply_markup=AskForAnythingKeyboard.KEYBOARD
+                reply_markup=AskForSomethingKeyboard.KEYBOARD
             )
             return 'ASK_FOR_PHOTO'
 
@@ -394,7 +394,7 @@ class AddVineConversation:
             self.bot.send_message(
                 chat_id=update.message.chat_id,
                 text=Texts.ASK_FOR_PHOTO,
-                reply_markup=AskForAnythingKeyboard.KEYBOARD
+                reply_markup=AskForSomethingKeyboard.KEYBOARD
             )
             return 'ASK_FOR_PHOTO'
         else:
@@ -411,14 +411,14 @@ class AddVineConversation:
             message_id=update.effective_message.message_id
         )
         data = update.callback_query.data
-        if data == AskForAnythingKeyboard.CALLBACK_BUTTON_YES:
+        if data == AskForSomethingKeyboard.CALLBACK_BUTTON_YES:
             self.bot.send_message(
                 chat_id=update.callback_query.message.chat_id,
                 text=Texts.PHOTO,
                 reply_markup=CancelKeyboard.KEYBOARD
             )
             return 'PHOTO'
-        elif data == AskForAnythingKeyboard.CALLBACK_BUTTON_NO:
+        elif data == AskForSomethingKeyboard.CALLBACK_BUTTON_NO:
             context.user_data['PHOTO'] = ''
             self.bot.send_message(
                 chat_id=update.callback_query.message.chat_id,
@@ -462,21 +462,25 @@ class AddVineConversation:
     @debug
     def date(self, update: Update, context: CallbackContext):
         data = update.message.text
-        if match(r'\d\d\d\d-\d\d-\d\d', data) and date(*map(int, data.split('-'))) <= date.today():
-            self.bot.send_message(
-                chat_id=update.message.chat_id,
-                text=Texts.MARK,
-                reply_markup=CancelKeyboard.KEYBOARD
-            )
-            context.user_data['DATE'] = date(*map(int, data.split('-')))
-            return 'MARK'
-        else:
+        try:
+            if match(r'\d\d\d\d-\d\d-\d\d', data) and date(*map(int, data.split('-'))) <= date.today():
+                self.bot.send_message(
+                    chat_id=update.message.chat_id,
+                    text=Texts.MARK,
+                    reply_markup=CancelKeyboard.KEYBOARD
+                )
+                context.user_data['DATE'] = date(*map(int, data.split('-')))
+                return 'MARK'
+            else:
+                raise ValueError
+        except ValueError:
             self.bot.send_message(
                 chat_id=update.message.chat_id,
                 text=Texts.DATE,
                 reply_markup=CancelKeyboard.KEYBOARD
             )
             return 'DATE'
+
 
     @debug
     def mark(self, update: Update, context: CallbackContext):
