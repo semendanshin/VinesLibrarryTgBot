@@ -4,7 +4,7 @@ from typing import Any
 from services import debug
 
 
-global_init('vines.sqlite3')
+global_init('../data/vines.sqlite3')
 
 
 @debug

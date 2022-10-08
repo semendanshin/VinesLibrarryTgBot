@@ -119,7 +119,7 @@ class DataBaseMenu:
                     comm=comment.commentary or '...'
                 ) + '\n'
             if vine.photo_path:
-                with open(f'img/{vine.photo_path}', 'rb') as photo:
+                with open(f'data/img/{vine.photo_path}', 'rb') as photo:
                     context.user_data['last_message_id'] = self.bot.send_photo(
                         chat_id=update.effective_chat.id,
                         caption=text,

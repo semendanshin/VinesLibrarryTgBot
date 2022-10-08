@@ -25,6 +25,6 @@ def debug(f):
 def save_image(image: bytes) -> str:
     """Сохраниет изображение и возварщает имя файла"""
     name = str(datetime.now()).replace('-', '').replace(':', '').replace('.', '').replace(' ', '') + '.jpg'
-    with open(f'img/{name}', 'wb') as f:
+    with open(f'data/img/{name}', 'wb') as f:
         f.write(image)
     return name
